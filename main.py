@@ -31,7 +31,7 @@ def parse_http_date(date_str: Optional[str]) -> Optional[datetime.datetime]:
     except Exception:
         return None
 
-def http_get(url: str, is_ssl: bool = False, port = None) -> HttpResponse:
+def http_get(url: str, is_ssl: bool = False, port = None, user_agent = "SinokaHTTPLeran/1.0 (Linux; x86_64)") -> HttpResponse:
     _port = 0
     
     _port = port if port else (443 if is_ssl else 80)
@@ -47,7 +47,16 @@ def http_get(url: str, is_ssl: bool = False, port = None) -> HttpResponse:
 
     client_socket.connect((url, _port))
 
-    client_socket.sendall(bytes(f"GET / HTTP/1.1\r\nHost: {url}\r\nAccept-Language: fr\r\nConnection: close\r\n\r\n", "UTF-8"))
+    client_socket.sendall(
+    bytes(
+        f"GET / HTTP/1.1\r\n"
+        f"Host: {url}\r\n"
+        f"User-Agent: {user_agent}\r\n"
+        f"Accept-Language: fr\r\n"
+        f"Connection: close\r\n\r\n",
+        "UTF-8"
+    )
+)
 
     raw_response = b""
     while True:
