@@ -20,6 +20,7 @@ class HttpResponse:
     redirect_location: Optional[str] # 나중에 enum으로 바꾸기
     content: str
     original: bytes
+    parsed_headers: dict
 
 def parse_http_date(date_str: Optional[str]) -> Optional[datetime.datetime]:
     if not date_str:
@@ -51,8 +52,6 @@ def http_get(url: str) -> HttpResponse:
     body_text = body_part.decode("utf-8", errors="ignore")
 
     data_by_line = headers_text.split("\r\n")
-
-    client_socket.close()
 
     status_line = data_by_line[0].split(" ", 2)
     protocol_version = status_line[0]
@@ -108,7 +107,8 @@ def http_get(url: str) -> HttpResponse:
         content_type=headers.get("content-type"),
         redirect_location=headers.get("location"),
         content=body_text,
-        original=raw_response
+        original=raw_response,
+        parsed_headers=headers
     )
 
 print(http_get("www.youtube.com").original)
