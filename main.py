@@ -19,7 +19,7 @@ class HttpResponse:
     content_type: Optional[str] # 나중에 enum으로 바꾸기
     redirect_location: Optional[str] # 나중에 enum으로 바꾸기
     content: str
-    original: bytearray
+    original: bytes
 
 def parse_http_date(date_str: Optional[str]) -> Optional[datetime.datetime]:
     if not date_str:
