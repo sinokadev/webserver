@@ -18,6 +18,7 @@ class HttpResponse:
     content_length: Optional[int]
     content_type: Optional[str] # 나중에 enum으로 바꾸기
     content: str
+    original: bytearray
 
 def parse_http_date(date_str: Optional[str]) -> Optional[datetime.datetime]:
     if not date_str:
@@ -104,7 +105,8 @@ def http_get(url: str) -> HttpResponse:
         accept_ranges=headers.get("accept-ranges"),
         content_length=int(headers["content-length"]) if "content-length" in headers else None,
         content_type=headers.get("content-type"),
-        content=body_text
+        content=body_text,
+        original=raw_response
     )
 
-print(http_get("example.com").content)
+print(http_get("www.youtube.com").original)
