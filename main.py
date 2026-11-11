@@ -4,6 +4,7 @@ import datetime
 from email.utils import parsedate_to_datetime
 import mimetypes
 from typing import Optional
+import ssl
 
 @dataclass
 class HttpResponse:
@@ -30,10 +31,21 @@ def parse_http_date(date_str: Optional[str]) -> Optional[datetime.datetime]:
     except Exception:
         return None
 
-def http_get(url: str) -> HttpResponse:
-    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+def http_get(url: str, is_ssl: bool = False, port = None) -> HttpResponse:
+    _port = 0
+    
+    _port = port if port else (443 if is_ssl else 80)
 
-    client_socket.connect((url, 80))
+    raw_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    if is_ssl:
+        context = ssl.create_default_context()
+
+        client_socket = context.wrap_socket(raw_socket, server_hostname=url)
+    else:
+        client_socket = raw_socket
+
+    client_socket.connect((url, _port))
 
     client_socket.sendall(bytes(f"GET / HTTP/1.1\r\nHost: {url}\r\nAccept-Language: fr\r\nConnection: close\r\n\r\n", "UTF-8"))
 
@@ -82,7 +94,10 @@ def http_get(url: str) -> HttpResponse:
             crlf_index = body_text.find("\r\n", pos)
             if crlf_index == -1: break
 
-            body_size = int(body_text[pos:crlf_index], 16)
+            hex_string = body_text[pos:crlf_index].strip()
+            if not hex_string:
+                break
+            body_size = int(hex_string, 16)
 
             if body_size == 0: break
 
@@ -111,4 +126,4 @@ def http_get(url: str) -> HttpResponse:
         parsed_headers=headers
     )
 
-print(http_get("www.youtube.com").original)
+print(http_get("www.youtube.com", is_ssl=True).content)
