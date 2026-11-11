@@ -1,20 +1,15 @@
 import socket
 
-server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+def http_get(url: str):
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    client_socket.connect((url, 80))
 
-server_socket.bind(('localhost', 80))
+    client_socket.sendall(bytes(f"GET / HTTP/1.1\r\nHost: {url}\r\nAccept-Language: fr\r\n\r\n", "UTF-8"))
 
-server_socket.listen()
+    data = client_socket.recv(1024)
+    print(f"Received: {data.decode()}")
 
-print("Server waiting for connections...")
-client_socket, addr = server_socket.accept()
-print(f"Connected by {addr}")
+    client_socket.close()
 
-data = client_socket.recv(1024)
-print(f"Received data: {data.decode()}")
-client_socket.sendall(data)
-
-client_socket.close()
-server_socket.close()
+http_get("example.com") # 와 서버가 내 요청에 응답해줬어
