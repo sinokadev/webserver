@@ -133,6 +133,6 @@ def http_get(url: str, is_ssl: bool = False, port = None, user_agent = "SinokaHT
         content=body_text,
         original=raw_response,
         parsed_headers=headers
-    )
+    ) # 리디렉션/URI 해석 등등은 다른 함수/유저가 담당함. 이 함수는 최소치
 
 print(http_get("www.youtube.com", is_ssl=True).content)
