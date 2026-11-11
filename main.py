@@ -87,27 +87,27 @@ def http_get(url: str, is_ssl: bool = False, port = None) -> HttpResponse:
         headers[key.strip().lower()] = value.strip()
 
     if headers.get("transfer-encoding") == "chunked":
-        merged_body = ""
+        merged_body = b""
         pos = 0
 
         while True:
-            crlf_index = body_text.find("\r\n", pos)
+            crlf_index = body_part.find(b"\r\n", pos)
             if crlf_index == -1: break
 
-            hex_string = body_text[pos:crlf_index].strip()
-            if not hex_string:
+            hex_bytes = body_part[pos:crlf_index].split(b";")[0].strip()
+            if not hex_bytes:
                 break
-            body_size = int(hex_string, 16)
+            body_size = int(hex_bytes, 16)
 
             if body_size == 0: break
 
             pos = crlf_index+2
 
-            merged_body += body_text[pos:pos+body_size]
+            merged_body += body_part[pos:pos+body_size]
 
             pos += body_size+2
 
-        body_text = merged_body
+        body_text = merged_body.decode("utf-8", errors="ignore")
 
     return HttpResponse(
         version=version,
