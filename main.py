@@ -17,6 +17,7 @@ class HttpResponse:
     accept_ranges: Optional[str]
     content_length: Optional[int]
     content_type: Optional[str] # 나중에 enum으로 바꾸기
+    redirect_location: Optional[str] # 나중에 enum으로 바꾸기
     content: str
     original: bytearray
 
@@ -105,6 +106,7 @@ def http_get(url: str) -> HttpResponse:
         accept_ranges=headers.get("accept-ranges"),
         content_length=int(headers["content-length"]) if "content-length" in headers else None,
         content_type=headers.get("content-type"),
+        redirect_location=headers.get("location"),
         content=body_text,
         original=raw_response
     )
