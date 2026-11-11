@@ -18,7 +18,7 @@ class HttpResponse:
     accept_ranges: Optional[str]
     content_length: Optional[int]
     content_type: Optional[str] # 나중에 enum으로 바꾸기
-    redirect_location: Optional[str] # 나중에 enum으로 바꾸기
+    redirect_location: Optional[str]
     content: str
     original: bytes
     parsed_headers: dict
